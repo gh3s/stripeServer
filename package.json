@@ -1,0 +1,12 @@
+{
+  "name": "stripeServer",
+  "version": "0.0.1",
+  "main": "index.js",
+  "repository": "https://github.com/gh3s/stripeServer.git",
+  "author": "gh3s <gh3s@protonmail.ch>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "stripe": "^8.150.0"
+  }
+}
