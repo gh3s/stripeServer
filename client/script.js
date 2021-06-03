@@ -1,6 +1,5 @@
-var handleFetchResult = function(result) {
-  console.log(result)
-  if (!result.ok) {
+var handleFetchResult = function (result) {
+   if (!result.ok) {
     return result.json().then(function(json) {
       if (json.error && json.error.message) {
         throw new Error(result.url + ' ' + result.status + ' ' + json.error.message);
@@ -14,54 +13,84 @@ var handleFetchResult = function(result) {
 };
 
 // Create a Checkout Session with the selected plan ID
-var createCheckoutSession = function(priceId) {
-  return fetch("http://127.0.0.1:4242/create-checkout-session", {
-    method: "POST",
+var createCheckoutSession = function (priceId, qty) {
+  return fetch("http://localhost:4242/create-checkout-session", {
+    method: "post",
     headers: {
+      'Accept': 'application/json, text/plain, */*',
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      priceId: priceId
+      "priceId": "price_1IuaN8GeWwMQD9UuVR5dCs8x",
+      "customer": "cus_JawG5l86crtEt3",
     })
-  }).then(handleFetchResult);
+  })
+  .then(handleFetchResult)
+  .catch(e=>console.error(e))
+  ;
+};
+
+var createUpdateSession = function (priceId, qty) {
+  return fetch("http://localhost:4242/update-checkout-session", {
+    method: "post",
+    headers: {
+      'Accept': 'application/json, text/plain, */*',
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      "priceId": "price_1IuaN8GeWwMQD9UuVR5dCs8x",
+      "customer": "cus_JawG5l86crtEt3",
+      "quantity": 1,
+      "subscription": null
+    })
+  })
+  .then(handleFetchResult)
+  .catch(e=>console.error(e))
+  ;
 };
 
 // Handle any errors returned from Checkout
-var handleResult = function(result) {
+var handleResult = function (result) {
   if (result.error) {
     showErrorMessage(result.error.message);
   }
 };
 
-var showErrorMessage = function(message) {
+var showErrorMessage = function (message) {
   var errorEl = document.getElementById("error-message")
   errorEl.textContent = message;
   errorEl.style.display = "block";
 };
 
 /* Get your Stripe publishable key to initialize Stripe.js */
-fetch("http://127.0.0.1:4242/setup")
-  .then(data=>{
-    console.log(data)
-    handleFetchResult()})
-  .then(function(json) {
+fetch("http://localhost:4242/setup")
+  .then(handleFetchResult)
+  .then(function (json) {
+    console.log(json)
     var publishableKey = json.publishableKey;
     var basicPriceId = json.basicPrice;
-
-    console.log(json)
-
     var stripe = Stripe(publishableKey);
-    // Setup event handler to create a Checkout Session when button is clicked
+    
     document
-      .getElementById("basic-plan-btn")
-      .addEventListener("click", function(evt) {
-        createCheckoutSession(basicPriceId).then(function(data) {
-          // Call Stripe.js method to redirect to the new Checkout page
-          stripe
-            .redirectToCheckout({
-              sessionId: data.sessionId
-            })
-            .then(handleResult);
-        });
+    .getElementById("basic-plan-btn")
+    .addEventListener("click", function (evt) {
+      createCheckoutSession(basicPriceId)
+      .then(function (data) {
+        stripe
+          .redirectToCheckout({ sessionId: data.sessionId })
+          .then(handleResult);
       });
-  });
+    });
+
+    document
+    .getElementById("pro-plan-btn")
+    .addEventListener("click", function (evt) {
+      createUpdateSession(basicPriceId)
+      .then(function (data) {
+        stripe
+        .redirectToCheckout({ sessionId: data.sessionId })
+        .then(handleResult);
+      });
+    });
+
+  }); 
