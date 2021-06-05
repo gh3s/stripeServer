@@ -22,7 +22,7 @@ app.get("/setup", async (req, res) => {
 });
 
 app.post('/update-checkout-session', async(req, res) => {
-  const { customer } = req.body;
+  const { customer, subscription } = req.body;
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -30,8 +30,8 @@ app.post('/update-checkout-session', async(req, res) => {
       customer: customer,
       setup_intent_data: {
         metadata: {
-          customer_id: 'cus_FOsk5sbh3ZQpAU',
-          subscription_id: 'sub_8epEF0PuRhmltU',
+          customer_id: customer,
+          subscription_id: subscription,
         },
       },
       success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
@@ -45,9 +45,9 @@ app.post('/update-checkout-session', async(req, res) => {
       error: {
         message: e.message,
       }
-    });    
+    });
   }
-})
+});
 
 app.post('/create-checkout-session', async (req, res) => {
   const { priceId, customer } = req.body;
@@ -84,7 +84,7 @@ app.post('/create-checkout-session', async (req, res) => {
 
 app.post('/list-user-card', async(req, res) => {
   const subscription = await stripe.subscriptions.retrieve('sub_49ty4767H20z6a');
-})
+});
 
 app.post('/order/success', async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);

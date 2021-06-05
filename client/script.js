@@ -13,7 +13,7 @@ var handleFetchResult = function (result) {
 };
 
 // Create a Checkout Session with the selected plan ID
-var createCheckoutSession = function (priceId, qty) {
+var createCheckoutSession = function (customer) {
   return fetch("http://localhost:4242/create-checkout-session", {
     method: "post",
     headers: {
@@ -22,7 +22,7 @@ var createCheckoutSession = function (priceId, qty) {
     },
     body: JSON.stringify({
       "priceId": "price_1IuaN8GeWwMQD9UuVR5dCs8x",
-      "customer": "cus_JawG5l86crtEt3",
+      "customer": 'cus_Jbp7vt3d8C7F9M',
     })
   })
   .then(handleFetchResult)
@@ -39,7 +39,7 @@ var createUpdateSession = function (priceId, qty) {
     },
     body: JSON.stringify({
       "priceId": "price_1IuaN8GeWwMQD9UuVR5dCs8x",
-      "customer": "cus_JawG5l86crtEt3",
+      "customer": "cus_Jbp7vt3d8C7F9M",
       "quantity": 1,
       "subscription": null
     })
@@ -74,7 +74,7 @@ fetch("http://localhost:4242/setup")
     document
     .getElementById("basic-plan-btn")
     .addEventListener("click", function (evt) {
-      createCheckoutSession(basicPriceId)
+      createCheckoutSession()
       .then(function (data) {
         stripe
           .redirectToCheckout({ sessionId: data.sessionId })
