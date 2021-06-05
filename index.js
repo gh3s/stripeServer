@@ -84,7 +84,7 @@ app.post('/create-checkout-session', async (req, res) => {
 
 app.post('/list-user-card', async(req, res) => {
   const subscription = await stripe.subscriptions.retrieve('sub_49ty4767H20z6a');
-});
+})
 
 app.post('/order/success', async (req, res) => {
   const session = await stripe.checkout.sessions.retrieve(req.query.session_id);
